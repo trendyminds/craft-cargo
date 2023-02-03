@@ -52,6 +52,10 @@ class Entry extends Component
 			return $entry;
 		}
 
+		if ($event->name === 'afterMoveInStructure') {
+			return $entry;
+		}
+
         return null;
     }
 }

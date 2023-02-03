@@ -80,6 +80,19 @@ class Cargo extends Plugin
             }
         );
 
+		// Watch for updates to entries
+        Event::on(
+            Entry::class,
+            Entry::EVENT_AFTER_MOVE_IN_STRUCTURE,
+            function (Event $event) {
+				if ($entry = $this->entry->hasChanges($event)) {
+					if ($entry->status === 'live') {
+                        ray('Structure: Live');
+                    }
+				}
+            }
+        );
+
 		// Watch for deletes to entries
         Event::on(
             Entry::class,
