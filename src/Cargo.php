@@ -69,15 +69,24 @@ class Cargo extends Plugin
         Event::on(
             Entry::class,
             Entry::EVENT_AFTER_SAVE,
-            function (ModelEvent $event) {
+            function (Event $event) {
                 if ($entry = $this->entry->hasChanges($event)) {
                     if ($entry->status === 'live') {
-                        Craft::$app->getQueue()->push(
-                            new UpdateEntry(['entryId' => $entry->id])
-                        );
+                        ray('Update');
                     } else {
                         ray('Remove');
                     }
+                }
+            }
+        );
+
+		// Watch for deletes to entries
+        Event::on(
+            Entry::class,
+            Entry::EVENT_AFTER_DELETE,
+            function (Event $event) {
+                if ($entry = $this->entry->hasChanges($event)) {
+                    ray('Delete', $entry->id);
                 }
             }
         );

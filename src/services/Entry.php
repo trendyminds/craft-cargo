@@ -2,16 +2,16 @@
 
 namespace trendyminds\cargo\services;
 
-use craft\events\ModelEvent;
 use craft\helpers\ElementHelper;
 use yii\base\Component;
+use yii\base\Event;
 
 /**
  * Entry
  */
 class Entry extends Component
 {
-    public function hasChanges(ModelEvent $event): ?\craft\elements\Entry
+    public function hasChanges(Event $event): ?\craft\elements\Entry
     {
         /** @var \craft\elements\Entry $entry */
         $entry = $event->sender;
@@ -47,6 +47,10 @@ class Entry extends Component
                 return $entry;
             }
         }
+
+		if ($event->name === 'afterDelete') {
+			return $entry;
+		}
 
         return null;
     }
