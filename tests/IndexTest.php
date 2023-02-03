@@ -148,3 +148,50 @@ it('can skip elements when returning an empty array in the transformer', functio
     $index = Cargo::getInstance()->index->get('foo');
     expect($index->transform(Entry::find()->all()))->toHaveCount(1);
 });
+
+it('finds all indices that contain the given entry', function () {
+    $entries = EntryFactory::factory()->count(10)->create();
+
+    Cargo::getInstance()->getSettings()->indices = [
+        'one' => function () use ($entries) {
+            return [
+                'elementType' => Entry::class,
+                'criteria' => ['slug' => $entries[0]->slug],
+                'transformer' => function (Entry $entry) {
+                    return [
+                        'id' => $entry->id,
+                    ];
+                },
+            ];
+        },
+
+        'two' => function () use ($entries) {
+            return [
+                'elementType' => Entry::class,
+                'criteria' => ['slug' => $entries[1]->slug],
+                'transformer' => function (Entry $entry) {
+                    return [
+                        'id' => $entry->id,
+                    ];
+                },
+            ];
+        },
+
+        'all' => function () {
+            return [
+                'elementType' => Entry::class,
+                'criteria' => [],
+                'transformer' => function (Entry $entry) {
+                    return [
+                        'id' => $entry->id,
+                    ];
+                },
+            ];
+        },
+    ];
+
+    $indices = Cargo::getInstance()->entry->indices($entries[0]->id);
+    $indexNames = collect($indices)->pluck('indexName')->toArray();
+    expect($indices)->toHaveCount(2);
+    expect($indexNames)->toBe(['one', 'all']);
+});

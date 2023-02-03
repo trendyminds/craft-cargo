@@ -3,6 +3,7 @@
 namespace trendyminds\cargo\services;
 
 use craft\helpers\ElementHelper;
+use trendyminds\cargo\Cargo;
 use yii\base\Component;
 use yii\base\Event;
 
@@ -48,14 +49,31 @@ class Entry extends Component
             }
         }
 
-		if ($event->name === 'afterDelete') {
-			return $entry;
-		}
+        if ($event->name === 'afterDelete') {
+            return $entry;
+        }
 
-		if ($event->name === 'afterMoveInStructure') {
-			return $entry;
-		}
+        if ($event->name === 'afterMoveInStructure') {
+            return $entry;
+        }
 
         return null;
+    }
+
+    /**
+     * Returns the indices that contain the given entry ID
+     */
+    public function indices(int $entryId): array
+    {
+        return collect(Cargo::getInstance()->getSettings()->indices)
+            ->keys()
+            ->filter(function ($indexName) use ($entryId) {
+                $index = Cargo::getInstance()->index->get($indexName);
+
+                return $index->query()->id($entryId)->exists();
+            })
+            ->values()
+            ->map(fn ($indexName) => Cargo::getInstance()->index->get($indexName))
+            ->toArray();
     }
 }

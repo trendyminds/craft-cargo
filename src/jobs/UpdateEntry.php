@@ -2,7 +2,6 @@
 
 namespace trendyminds\cargo\jobs;
 
-use craft\elements\db\EntryQuery;
 use craft\elements\Entry;
 use craft\queue\BaseJob;
 use trendyminds\cargo\Cargo;
@@ -16,29 +15,17 @@ class UpdateEntry extends BaseJob
      */
     public function execute($queue): void
     {
-        ray()->clearAll();
+        // Get the entry
+        $entry = Entry::find()->id($this->entryId)->all();
 
-        $entry = Entry::find()->id($this->entryId)->one();
-        $relatedEntries = Entry::find()->relatedTo($entry)->all();
+        // Loop through each index it is used within
+        foreach (Cargo::getInstance()->entry->indices($this->entryId) as $index) {
+            $indexName = $index->indexName;
+            $data = $index->transform($entry);
 
-        // Loop through all of the entry queries in our config to see if the entry matches any of them
-        $yo = collect(Cargo::getInstance()->getSettings()->indices)
-            ->filter(function ($data, $indexName) use ($entry) {
-                /** @var EntryQuery $query */
-                $query = Cargo::getInstance()->getIndexData($indexName)->query;
-
-                return $query->id($entry->id)->exists();
-            })
-            ->each(function ($data, $indexName) use ($entry) {
-                /** @var EntryQuery $query */
-                $query = Cargo::getInstance()->getIndexData($indexName)->query;
-                ray($query->id($entry->id)->one());
-            });
-
-        // ray(
-        // 	$entry->id,
-        // 	$relatedEntries
-        // );
+            // Send the transformed data to be reindexed
+            Cargo::getInstance()->algolia->update($indexName, $data);
+        }
     }
 
     /**

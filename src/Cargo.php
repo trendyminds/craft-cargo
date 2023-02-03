@@ -6,7 +6,6 @@ use Craft;
 use craft\base\Model;
 use craft\base\Plugin;
 use craft\elements\Entry;
-use craft\events\ModelEvent;
 use craft\events\RegisterComponentTypesEvent;
 use craft\services\Utilities;
 use trendyminds\cargo\jobs\UpdateEntry;
@@ -72,34 +71,40 @@ class Cargo extends Plugin
             function (Event $event) {
                 if ($entry = $this->entry->hasChanges($event)) {
                     if ($entry->status === 'live') {
-                        ray('Update');
+                        // ray('Update');
+                        Craft::$app->getQueue()->push(
+                            new UpdateEntry(['entryId' => $entry->id])
+                        );
                     } else {
-                        ray('Remove');
+                        // ray('Remove');
                     }
                 }
             }
         );
 
-		// Watch for updates to entries
+        // Watch for updates to entries
         Event::on(
             Entry::class,
             Entry::EVENT_AFTER_MOVE_IN_STRUCTURE,
             function (Event $event) {
-				if ($entry = $this->entry->hasChanges($event)) {
-					if ($entry->status === 'live') {
-                        ray('Structure: Live');
+                if ($entry = $this->entry->hasChanges($event)) {
+                    if ($entry->status === 'live') {
+                        // ray('Structure: Live');
+                        Craft::$app->getQueue()->push(
+                            new UpdateEntry(['entryId' => $entry->id])
+                        );
                     }
-				}
+                }
             }
         );
 
-		// Watch for deletes to entries
+        // Watch for deletes to entries
         Event::on(
             Entry::class,
             Entry::EVENT_AFTER_DELETE,
             function (Event $event) {
                 if ($entry = $this->entry->hasChanges($event)) {
-                    ray('Delete', $entry->id);
+                    // ray('Delete', $entry->id);
                 }
             }
         );
