@@ -29,6 +29,13 @@ class Algolia extends Component
             ]);
     }
 
+    public function delete(string $indexName, array $ids)
+    {
+        $this::client()
+            ->initIndex($indexName)
+            ->deleteObjects($ids);
+    }
+
     protected static function client(): SearchClient
     {
         $settings = Cargo::getInstance()->getSettings();

@@ -8,6 +8,7 @@ use craft\base\Plugin;
 use craft\elements\Entry;
 use craft\events\RegisterComponentTypesEvent;
 use craft\services\Utilities;
+use trendyminds\cargo\jobs\DeleteEntry;
 use trendyminds\cargo\jobs\UpdateEntry;
 use trendyminds\cargo\models\Settings;
 use trendyminds\cargo\utilities\CargoUtility;
@@ -71,12 +72,13 @@ class Cargo extends Plugin
             function (Event $event) {
                 if ($entry = $this->entry->hasChanges($event)) {
                     if ($entry->status === 'live') {
-                        // ray('Update');
                         Craft::$app->getQueue()->push(
                             new UpdateEntry(['entryId' => $entry->id])
                         );
                     } else {
-                        // ray('Remove');
+                        Craft::$app->getQueue()->push(
+                            new DeleteEntry(['entryId' => $entry->id])
+                        );
                     }
                 }
             }
@@ -89,7 +91,6 @@ class Cargo extends Plugin
             function (Event $event) {
                 if ($entry = $this->entry->hasChanges($event)) {
                     if ($entry->status === 'live') {
-                        // ray('Structure: Live');
                         Craft::$app->getQueue()->push(
                             new UpdateEntry(['entryId' => $entry->id])
                         );
@@ -104,7 +105,9 @@ class Cargo extends Plugin
             Entry::EVENT_AFTER_DELETE,
             function (Event $event) {
                 if ($entry = $this->entry->hasChanges($event)) {
-                    // ray('Delete', $entry->id);
+                    Craft::$app->getQueue()->push(
+                        new UpdateEntry(['entryId' => $entry->id])
+                    );
                 }
             }
         );
