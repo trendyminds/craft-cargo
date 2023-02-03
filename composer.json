@@ -1,0 +1,49 @@
+{
+    "name": "trendyminds/craft-cargo",
+    "description": "A driver-based search indexer supporting Algolia out-of-the-box",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/trendyminds/craft-cargo/issues?state=open",
+        "source": "https://github.com/trendyminds/craft-cargo",
+        "docs": "https://github.com/trendyminds/craft-cargo",
+        "rss": "https://github.com/trendyminds/craft-cargo/releases.atom"
+    },
+    "require": {
+        "php": ">=8.0.2",
+        "algolia/algoliasearch-client-php": "^3.3",
+        "craftcms/cms": "^4.3.6.1",
+        "league/fractal": "^0.20.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "trendyminds\\cargo\\": "src/"
+        }
+    },
+    "extra": {
+        "handle": "cargo",
+        "name": "Cargo",
+        "developer": "TrendyMinds",
+        "documentationUrl": "https://github.com/trendyminds/craft-cargo",
+        "class": "trendyminds\\cargo\\Cargo"
+    },
+    "config": {
+        "sort-packages": true,
+        "platform": {
+            "php": "8.0.2"
+        },
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true,
+            "pestphp/pest-plugin": true
+        }
+    },
+    "require-dev": {
+        "craftcms/craft": "^2.0",
+        "laravel/pint": "^1.4",
+        "markhuot/craft-pest": "@dev",
+        "pestphp/pest-plugin-mock": "^1.0",
+        "spatie/ray": "^1.36"
+    }
+}

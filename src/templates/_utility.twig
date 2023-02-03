@@ -1,0 +1,27 @@
+<div class="tableview tablepane">
+	<table class="data fullwidth">
+		<thead>
+			<tr>
+				<th>Index</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for index in indices %}
+				<tr>
+					<td width="70%"><strong>{{ index }}</strong></td>
+					<td width="30%">
+						<div style="display: flex; gap: 12px;">
+							<a href="{{ actionUrl('cargo/index/update', { indexName: index }) }}" class="btn">
+								Update
+							</a>
+							<a href="{{ actionUrl('cargo/index/update', { indexName: index, refresh: true }) }}" class="btn submit">
+								Refresh
+							</a>
+						</div>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
