@@ -195,3 +195,27 @@ it('finds all indices that contain the given entry', function () {
     expect($indices)->toHaveCount(2);
     expect($indexNames)->toBe(['one', 'all']);
 });
+
+it('adds an update job to the queue when a new entry is created', function () {
+    Cargo::getInstance()->getSettings()->indices = [
+        'foo' => function () {
+            return [
+                'elementType' => Entry::class,
+                'criteria' => [],
+                'transformer' => function (Entry $entry) {
+                    return [
+                        'id' => $entry->id,
+                    ];
+                },
+            ];
+        },
+    ];
+
+    EntryFactory::factory()->create();
+
+    $updating = collect(Craft::$app->getQueue()->getJobInfo())
+        ->filter(fn ($job) => $job['description'] === 'Updating record')
+        ->isNotEmpty();
+
+    expect($updating)->toBeTrue();
+});
