@@ -26,6 +26,20 @@ class UpdateEntry extends BaseJob
             // Send the transformed data to be reindexed
             Cargo::getInstance()->algolia->update($indexName, $data);
         }
+
+		// Find any related entries
+		$related = Entry::find()->relatedTo($this->entryId)->all();
+
+		// Loop through each related entry and the indices it is used in
+		foreach ($related as $entry) {
+			foreach (Cargo::getInstance()->entry->indices($entry->id) as $index) {
+				$indexName = $index->indexName;
+				$data = $index->transform([$entry]);
+
+				// Send the transformed data to be reindexed
+				Cargo::getInstance()->algolia->update($indexName, $data);
+			}
+		}
     }
 
     /**
