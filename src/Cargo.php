@@ -43,6 +43,7 @@ class Cargo extends Plugin
     public function init()
     {
         parent::init();
+		Craft::setAlias('@trendyminds/cargo', $this->getBasePath());
 
         Craft::$app->onInit(function () {
             $this->attachEventHandlers();
