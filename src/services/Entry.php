@@ -21,10 +21,12 @@ class Entry extends Component
             return null;
         }
 
+        // If the entry was first created
         if ($entry->firstSave) {
             return $entry;
         }
 
+        // Exclude drafts and revisions
         if (ElementHelper::isDraft($entry)) {
             return null;
         }
@@ -37,10 +39,22 @@ class Entry extends Component
             return null;
         }
 
+        // If one of the changed attributes was the entry's status
+        if (collect($entry->getDirtyAttributes())->contains('enabled')) {
+            return $entry;
+        }
+
+        // If an attribute changed, but the entry is disabled
+        if ($entry->getDirtyAttributes() && $entry->status !== 'live') {
+            return null;
+        }
+
+        // If we have any changed attributes after our initial status checks
         if ($entry->getDirtyAttributes()) {
             return $entry;
         }
 
+        // If we have any modified fields based on a duplicated entry
         $original = $entry->duplicateOf;
 
         if ($original !== null) {
@@ -49,10 +63,12 @@ class Entry extends Component
             }
         }
 
+        // If the entry was deleted
         if ($event->name === 'afterDelete') {
             return $entry;
         }
 
+        // If the entry was moved within a structure
         if ($event->name === 'afterMoveInStructure') {
             return $entry;
         }

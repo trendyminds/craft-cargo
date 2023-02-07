@@ -113,3 +113,24 @@ it('adds a single delete job to the queue when an entry is deleted', function ()
     expect($updating)->toHaveCount(0);
     expect($deleting)->toHaveCount(1);
 });
+
+it('does not send an update when saving an already-disabled entry', function () {
+    $entry = EntryFactory::factory()->enabled(false)->create();
+    Craft::$app->getQueue()->releaseAll();
+
+    $entry->title = 'New title';
+    Craft::$app->elements->saveElement($entry);
+
+    $updating = collect(Craft::$app->getQueue()->getJobInfo())
+        ->filter(fn ($job) => $job['description'] === 'Updating record')
+        ->values()
+        ->toArray();
+
+    $deleting = collect(Craft::$app->getQueue()->getJobInfo())
+        ->filter(fn ($job) => $job['description'] === 'Deleting record')
+        ->values()
+        ->toArray();
+
+    expect($updating)->toHaveCount(0);
+    expect($deleting)->toHaveCount(0);
+});
