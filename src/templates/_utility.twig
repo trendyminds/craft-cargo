@@ -7,6 +7,13 @@
 			</tr>
 		</thead>
 		<tbody>
+			{% if indices | length == 0 %}
+				<tr>
+					<td class="centeralign" colspan="2" style="background: #fff !important; padding: 20px 0 10px;">
+						No indices currently exist. Configure one within <code>config/cargo.php</code>
+					</td>
+				</tr>
+			{% endif %}
 			{% for index in indices %}
 				<tr>
 					<td width="70%"><strong>{{ index }}</strong></td>
