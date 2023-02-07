@@ -134,3 +134,35 @@ it('does not send an update when saving an already-disabled entry', function () 
     expect($updating)->toHaveCount(0);
     expect($deleting)->toHaveCount(0);
 });
+
+it('sends a single update when duplicating an entry', function () {
+    $entry = EntryFactory::factory()->create();
+    Craft::$app->getQueue()->releaseAll();
+    Craft::$app->elements->duplicateElement($entry);
+
+    $updating = collect(Craft::$app->getQueue()->getJobInfo())
+        ->filter(fn ($job) => $job['description'] === 'Updating record')
+        ->values()
+        ->toArray();
+
+    expect($updating)->toHaveCount(1);
+});
+
+it('does not send an update when duplicating a disabled entry', function () {
+    $entry = EntryFactory::factory()->enabled(false)->create();
+    Craft::$app->getQueue()->releaseAll();
+    Craft::$app->elements->duplicateElement($entry);
+
+    $updating = collect(Craft::$app->getQueue()->getJobInfo())
+        ->filter(fn ($job) => $job['description'] === 'Updating record')
+        ->values()
+        ->toArray();
+
+    $deleting = collect(Craft::$app->getQueue()->getJobInfo())
+        ->filter(fn ($job) => $job['description'] === 'Deleting record')
+        ->values()
+        ->toArray();
+
+    expect($updating)->toHaveCount(0);
+    expect($deleting)->toHaveCount(0);
+});
