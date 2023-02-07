@@ -15,7 +15,6 @@ it('adds an update job to the queue when a new entry is created', function () {
     Cargo::getInstance()->getSettings()->indices = [
         'foo' => function () {
             return [
-                'elementType' => Entry::class,
                 'criteria' => [],
                 'transformer' => function (Entry $entry) {
                     return [

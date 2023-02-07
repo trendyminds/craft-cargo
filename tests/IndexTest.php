@@ -32,7 +32,6 @@ it('returns a query', function () {
     Cargo::getInstance()->getSettings()->indices = [
         'foo' => function () {
             return [
-                'elementType' => Entry::class,
                 'criteria' => [],
                 'transformer' => function (Entry $entry) {
                     return [
@@ -55,7 +54,6 @@ it('implements a default criteria', function () {
     Cargo::getInstance()->getSettings()->indices = [
         'foo' => function () {
             return [
-                'elementType' => Entry::class,
                 'transformer' => function (Entry $entry) {
                     return [
                         'id' => $entry->id,
@@ -77,7 +75,6 @@ it('implements filterable criteria', function () {
     Cargo::getInstance()->getSettings()->indices = [
         'foo' => function () use ($entries) {
             return [
-                'elementType' => Entry::class,
                 'criteria' => [
                     'slug' => $entries[1]->slug,
                 ],
@@ -102,7 +99,6 @@ it('transforms elements', function () {
     Cargo::getInstance()->getSettings()->indices = [
         'foo' => function () {
             return [
-                'elementType' => Entry::class,
                 'transformer' => function (Entry $entry) {
                     return [
                         'id' => $entry->id,
@@ -130,7 +126,6 @@ it('can skip elements when returning an empty array in the transformer', functio
     Cargo::getInstance()->getSettings()->indices = [
         'foo' => function () {
             return [
-                'elementType' => Entry::class,
                 'transformer' => function (Entry $entry) {
                     if ($entry->title === 'foo') {
                         return [];
@@ -155,7 +150,6 @@ it('finds all indices that contain the given entry', function () {
     Cargo::getInstance()->getSettings()->indices = [
         'one' => function () use ($entries) {
             return [
-                'elementType' => Entry::class,
                 'criteria' => ['slug' => $entries[0]->slug],
                 'transformer' => function (Entry $entry) {
                     return [
@@ -167,7 +161,6 @@ it('finds all indices that contain the given entry', function () {
 
         'two' => function () use ($entries) {
             return [
-                'elementType' => Entry::class,
                 'criteria' => ['slug' => $entries[1]->slug],
                 'transformer' => function (Entry $entry) {
                     return [
@@ -179,7 +172,6 @@ it('finds all indices that contain the given entry', function () {
 
         'all' => function () {
             return [
-                'elementType' => Entry::class,
                 'criteria' => [],
                 'transformer' => function (Entry $entry) {
                     return [

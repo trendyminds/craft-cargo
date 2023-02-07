@@ -32,8 +32,6 @@ return [
     'indices' => [
         'my_index_name' => function () {
             return [
-                // Entry::class is the only supported element type at this time
-                'elementType' => craft\elements\Entry::class,
                 'criteria' => ['section' => 'pages'],
                 'transformer' => function (craft\elements\Entry $entry) {
                     return [
