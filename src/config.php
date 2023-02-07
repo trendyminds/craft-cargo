@@ -29,5 +29,20 @@ return [
     /**
      * Your Algolia indices and the Craft entries that should be synced to them.
      */
-    'indices' => [],
+    'indices' => [
+        'my_index_name' => function () {
+            return [
+                // Entry::class is the only supported element type at this time
+                'elementType' => craft\elements\Entry::class,
+                'criteria' => ['section' => 'pages'],
+                'transformer' => function (craft\elements\Entry $entry) {
+                    return [
+                        // Your index must include 'id' and be the ID of the entry
+                        'id' => $entry->id,
+                        'title' => $entry->title,
+                    ];
+                },
+            ];
+        },
+    ],
 ];
