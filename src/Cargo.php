@@ -83,7 +83,9 @@ class Cargo extends Plugin
                         Craft::$app->getQueue()->push(
                             new UpdateEntry(['entryId' => $entry->id])
                         );
-                    } else {
+                    }
+
+                    if (! $entry->firstSave && $entry->status !== 'live') {
                         Craft::$app->getQueue()->push(
                             new DeleteEntry(['entryId' => $entry->id])
                         );
