@@ -79,3 +79,22 @@ it('adds a single delete job to the queue when an entry is closed', function () 
     expect($updating)->toHaveCount(0);
     expect($deleting)->toHaveCount(1);
 });
+
+it('adds a single delete job to the queue when an entry is deleted', function () {
+    $entry = EntryFactory::factory()->create();
+    Craft::$app->getQueue()->releaseAll();
+	Craft::$app->elements->deleteElement($entry);
+
+	$updating = collect(Craft::$app->getQueue()->getJobInfo())
+        ->filter(fn ($job) => $job['description'] === 'Updating record')
+        ->values()
+		->toArray();
+
+	$deleting = collect(Craft::$app->getQueue()->getJobInfo())
+        ->filter(fn ($job) => $job['description'] === 'Deleting record')
+        ->values()
+		->toArray();
+
+    expect($updating)->toHaveCount(0);
+    expect($deleting)->toHaveCount(1);
+});

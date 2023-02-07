@@ -114,7 +114,7 @@ class Cargo extends Plugin
             function (Event $event) {
                 if ($entry = $this->entry->hasChanges($event)) {
                     Craft::$app->getQueue()->push(
-                        new UpdateEntry(['entryId' => $entry->id])
+                        new DeleteEntry(['entryId' => $entry->id])
                     );
                 }
             }
