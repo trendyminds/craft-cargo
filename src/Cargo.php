@@ -43,7 +43,7 @@ class Cargo extends Plugin
     public function init()
     {
         parent::init();
-		Craft::setAlias('@trendyminds/cargo', $this->getBasePath());
+        Craft::setAlias('@trendyminds/cargo', $this->getBasePath());
 
         Craft::$app->onInit(function () {
             $this->attachEventHandlers();
@@ -66,7 +66,14 @@ class Cargo extends Plugin
             }
         );
 
-        // Watch for updates to entries
+        /**
+         * Ony listen for save/update/delete events when the 'enabled' setting
+         * is set to true. Otherwise, skip these.
+         */
+        if (! Cargo::getInstance()->getSettings()->enabled) {
+            return;
+        }
+
         Event::on(
             Entry::class,
             Entry::EVENT_AFTER_SAVE,

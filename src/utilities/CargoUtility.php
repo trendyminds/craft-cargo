@@ -23,7 +23,7 @@ class CargoUtility extends Utility
 
     public static function iconPath(): ?string
     {
-		return Craft::getAlias('@trendyminds/cargo/icon.svg');
+        return Craft::getAlias('@trendyminds/cargo/icon.svg');
     }
 
     public static function contentHtml(): string

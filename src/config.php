@@ -7,6 +7,12 @@
 
 return [
     /**
+     * Whether Cargo should sync data to Algolia when an entry is updated
+     * It is possible to still run sync commands via the console or utility area
+     */
+    'enabled' => true,
+
+    /**
      * The Algolia application ID and secret.
      */
     'algolia' => [

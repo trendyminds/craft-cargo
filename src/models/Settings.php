@@ -10,6 +10,14 @@ use craft\base\Model;
 class Settings extends Model
 {
     /**
+     * Whether Cargo should sync data to Algolia when an entry is updated
+     * It is possible to still run sync commands via the console or utility area
+     *
+     * @var bool
+     */
+    public bool $enabled = true;
+
+    /**
      * Your Algolia credentials
      *
      * @var array
