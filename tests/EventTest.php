@@ -11,25 +11,71 @@ beforeEach(function () {
     Cargo::getInstance()->setSettings($settings);
 });
 
-it('adds an update job to the queue when a new entry is created', function () {
-    Cargo::getInstance()->getSettings()->indices = [
-        'foo' => function () {
-            return [
-                'criteria' => [],
-                'transformer' => function (Entry $entry) {
-                    return [
-                        'id' => $entry->id,
-                    ];
-                },
-            ];
-        },
-    ];
+it('ensures the queue can be wiped', function () {
+    $entry = EntryFactory::factory()->create();
+    expect(Craft::$app->getQueue()->getJobInfo())->not->toBeEmpty();
 
+	// Clear the existing queue
+    Craft::$app->getQueue()->releaseAll();
+    expect(Craft::$app->getQueue()->getJobInfo())->toBeEmpty();
+});
+
+it('adds a single update job to the queue when a new entry is created', function () {
     EntryFactory::factory()->create();
 
     $updating = collect(Craft::$app->getQueue()->getJobInfo())
         ->filter(fn ($job) => $job['description'] === 'Updating record')
-        ->isNotEmpty();
+        ->values()
+		->toArray();
 
-    expect($updating)->toBeTrue();
+    expect($updating)->toHaveCount(1);
+});
+
+it('adds a single update job to the queue when an entry is updated', function () {
+    $entry = EntryFactory::factory()->create();
+    Craft::$app->getQueue()->releaseAll();
+
+	$entry->title = 'New title';
+	Craft::$app->elements->saveElement($entry);
+
+	$updating = collect(Craft::$app->getQueue()->getJobInfo())
+        ->filter(fn ($job) => $job['description'] === 'Updating record')
+        ->values()
+		->toArray();
+
+    expect($updating)->toHaveCount(1);
+});
+
+it('does not send an update when an entry is unchanged', function () {
+    $entry = EntryFactory::factory()->create();
+    Craft::$app->getQueue()->releaseAll();
+	Craft::$app->elements->saveElement($entry);
+
+	$updating = collect(Craft::$app->getQueue()->getJobInfo())
+        ->filter(fn ($job) => $job['description'] === 'Updating record')
+        ->values()
+		->toArray();
+
+    expect($updating)->toHaveCount(0);
+});
+
+it('adds a single delete job to the queue when an entry is closed', function () {
+    $entry = EntryFactory::factory()->create();
+    Craft::$app->getQueue()->releaseAll();
+
+	$entry->enabled = false;
+	Craft::$app->elements->saveElement($entry);
+
+	$updating = collect(Craft::$app->getQueue()->getJobInfo())
+        ->filter(fn ($job) => $job['description'] === 'Updating record')
+        ->values()
+		->toArray();
+
+	$deleting = collect(Craft::$app->getQueue()->getJobInfo())
+        ->filter(fn ($job) => $job['description'] === 'Deleting record')
+        ->values()
+		->toArray();
+
+    expect($updating)->toHaveCount(0);
+    expect($deleting)->toHaveCount(1);
 });
