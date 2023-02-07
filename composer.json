@@ -43,6 +43,7 @@
         "craftcms/craft": "^2.0",
         "laravel/pint": "^1.4",
         "markhuot/craft-pest": "@dev",
+        "pestphp/pest-plugin-faker": "^1.0",
         "pestphp/pest-plugin-mock": "^1.0",
         "spatie/ray": "^1.36"
     }

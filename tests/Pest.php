@@ -11,6 +11,10 @@
 |
 */
 
+use craft\elements\Entry;
+use markhuot\craftpest\factories\Section;
+use function Pest\Faker\faker;
+
 uses(
     markhuot\craftpest\test\TestCase::class,
     markhuot\craftpest\test\RefreshesDatabase::class,
@@ -42,7 +46,14 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function newEntry(array $attributes = [], bool $enabled = true)
 {
-    // ..
+    $entry = new Entry();
+    $entry->title = faker()->sentence;
+    $entry->setAttributes($attributes);
+    $entry->sectionId = Section::factory()->create()->id;
+    $entry->enabled = $enabled;
+    Craft::$app->elements->saveElement($entry);
+
+    return $entry;
 }
