@@ -11,3 +11,4 @@
 /craft
 /config
 .phpunit.result.cache
+/cpresources

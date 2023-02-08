@@ -113,7 +113,7 @@ it('adds a single delete job to the queue when an entry is deleted', function ()
 });
 
 it('does not send an update when saving an already-disabled entry', function () {
-    $entry = newEntry();
+    $entry = newEntry([], false);
     Craft::$app->getQueue()->releaseAll();
 
     $entry->title = 'New title';
@@ -131,7 +131,7 @@ it('does not send an update when saving an already-disabled entry', function () 
 
     expect($updating)->toHaveCount(0);
     expect($deleting)->toHaveCount(0);
-})->skip();
+});
 
 it('sends a single update when duplicating an entry', function () {
     $entry = newEntry();
